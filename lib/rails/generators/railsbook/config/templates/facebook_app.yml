@@ -1,0 +1,2 @@
+app_id: "<%= @app_id || "YOUR APP ID" %>"
+app_secret: "<%= @app_secret || "YOUR APP SECRET" %>"
