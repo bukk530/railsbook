@@ -6,7 +6,7 @@ require "railsbook/version"
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "railsbook"
-  s.version     = Railsbook::VERSION
+  s.version     = RailsBook::VERSION
   s.authors     = ["bukk530"]
   s.email       = [""]
   s.homepage    = "https://github.com/bukk530/railsbook"
