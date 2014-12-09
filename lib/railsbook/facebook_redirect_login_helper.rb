@@ -1,14 +1,19 @@
 require 'securerandom'
 require 'addressable/uri'
 
+#TODO: add comments!
+
 module RailsBook
-  class FacebookRedirectLoginHelper
+  class FacebookRedirectLoginHelper < ActionController
     
     def initialize(redirect_url)
       @redirect_url = redirect_url
     end
     
     def get_login_url(scope = [], display_as_popup=false)
+      
+      puts session[:test]
+      
       state = random_bytes(16)
       uri = Addressable::URI.new
       
@@ -42,6 +47,40 @@ module RailsBook
       uri.query_values = uri_params
       return "https://www.facebook.com/logout.php?" +
              uri.query
+    end
+    
+    def get_session_from_redirect 
+      load_state
+      if is_valid_redirect
+        response_params = {
+          client_id: ENV["app_id"],
+          redirect_uri: @redirect_uri,
+          client_secret: ENV["app_secret"],
+          code: get_code
+        }
+        facebook_response = {}
+      end
+      return nil
+    end
+    
+    private 
+    
+    def is_valid_redirect
+      get_code and 
+      get_state and
+      get_state.eql? get_internal_state
+    end
+    
+    def get_internal_state
+      session[:state]
+    end
+    
+    def get_state
+      params[:state]
+    end
+    
+    def get_code
+      params[:code]
     end
     
     def random_bytes(bytes)
