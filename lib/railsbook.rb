@@ -7,4 +7,6 @@ module RailsBook
     
 end
 
-require 'railsbook/facebook_redirect_login_helper'
+Dir[File.dirname(__FILE__) + "/railsbook/*.rb"].each do |file|
+  require file
+end
