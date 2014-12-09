@@ -12,24 +12,29 @@ Configuration
 -------------
 
 To start using this gem you need to include it in your Rails4 app Gemfile:
-```
+```ruby
 #gem RailsBook
-gem 'railsbook', github: 'bukk530/railsbook'```
+gem 'railsbook', github: 'bukk530/railsbook'
+```
 
 Save your Gemfile and run:
+```bash
+bundle install
 ```
-bundle install```
 
 Now that you have installed RailsBook you need to configure your Facebook App!
 
 Do:
+```bash
+rails g rails_book:config
 ```
-rails g rails_book:config```
 to generate a ```config/facebook_app.yml``` configuration file.
 
 Open config/facebook_app.yml, it should look like this:
-```app_id: "YOUR APP ID"
-app_secret: "YOUR SECRET"```
+```YML
+app_id: "YOUR APP ID"
+app_secret: "YOUR SECRET"
+```
 Now go to your [Facebook application](https://developers.facebook.com/apps/) and replace the App Id and Secret in your config file
 
 Now you should be able to play with the SDK! 
