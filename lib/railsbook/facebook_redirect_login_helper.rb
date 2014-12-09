@@ -4,7 +4,7 @@ require 'addressable/uri'
 #TODO: add comments!
 
 module RailsBook
-  class FacebookRedirectLoginHelper < ActionController
+  class FacebookRedirectLoginHelper
     
     def initialize(redirect_url)
       @redirect_url = redirect_url
