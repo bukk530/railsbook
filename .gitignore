@@ -8,3 +8,4 @@ test/dummy/tmp/
 test/dummy/.sass-cache
 Gemfile.lock
 Gemfile.lock
+test/dummy/app/controllers/fb_controller.rb

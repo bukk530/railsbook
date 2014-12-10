@@ -1,26 +1,28 @@
 require 'securerandom'
-require 'addressable/uri'
 
-#TODO: add comments!
+#TODO: Implement this class as a Rails4 Helper class
 
 module RailsBook
+  
   class FacebookRedirectLoginHelper
     
-    def initialize(redirect_url)
+    def initialize(redirect_url, session, params)
       @redirect_url = redirect_url
+      @session = session
+      @params = params
     end
     
-    def get_login_url(scope = [], display_as_popup=false)
+    def get_login_url(display_as_popup=false, scope = [])
       
-      puts session[:test]
+      @state = random_bytes(16)
+      @session[:_fb_state] = @state
       
-      state = random_bytes(16)
       uri = Addressable::URI.new
       
       uri_params = {
         client_id:      ENV["app_id"],
         redirect_uri:   @redirect_url,
-        state:          :state,
+        state:          @state,
         sdk:            RailsBook::SDK_NAME,
         scope:          scope.join(",")
       }
@@ -39,18 +41,18 @@ module RailsBook
       if !session.instance_of? FacebookSession
         raise FacebookSDKException.new "not a valid session"
       end
-      uri = Addressable::URI.new
+      
       uri_params = {
         next:           next_page,
         access_token:   session.get_token 
       }
-      uri.query_values = uri_params
+      
       return "https://www.facebook.com/logout.php?" +
-             uri.query
+             URL.encode_www_form(uri_params)
     end
     
-    def get_session_from_redirect 
-      load_state
+    def get_session_from_redirect
+      @state = get_state
       if is_valid_redirect
         response_params = {
           client_id: ENV["app_id"],
@@ -58,9 +60,16 @@ module RailsBook
           client_secret: ENV["app_secret"],
           code: get_code
         }
-        facebook_response = {}
+        facebook_response = FacebookRequest.new( FacebookSession::new_app_session,
+                                                 "GET",
+                                                 "/oauth/access_token",
+                                                 response_params
+                                                ).execute.get_response
+        if facebook_response[:access_token].present?
+          FacebookSession.new facebook_response[:access_token]
+        end
       end
-      return nil
+      nil
     end
     
     private 
@@ -68,19 +77,15 @@ module RailsBook
     def is_valid_redirect
       get_code and 
       get_state and
-      get_state.eql? get_internal_state
-    end
-    
-    def get_internal_state
-      session[:state]
+      get_state.eql? @state
     end
     
     def get_state
-      params[:state]
+      @session[:_fb_state]
     end
     
     def get_code
-      params[:code]
+      @session[:_fb_code]
     end
     
     def random_bytes(bytes)
