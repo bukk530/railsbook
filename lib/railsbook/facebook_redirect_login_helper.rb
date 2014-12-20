@@ -1,6 +1,6 @@
 require 'securerandom'
 
-#TODO: Implement this class as a Rails4 Helper class
+#TODO: Implement this class as a Rails Helper class
 
 module RailsBook
   

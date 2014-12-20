@@ -1,4 +1,5 @@
 require 'digest'
+require 'json'
 require 'net/http'
 require 'uri'
 
@@ -27,11 +28,6 @@ module RailsBook
     end
     
     def execute
-      
-      self
-    end
-    
-    def get_response
       url = get_request_url
       params = @params
       
@@ -52,8 +48,16 @@ module RailsBook
       
       etag_hit = 304 == response.code
       
+      etag_received = response.header[:etag]
+      
+      decoded_result = json.parse(response.body)
+      
+      #TODO: check for errorss
+      
+      FacebookResponse.new this, decoded_result, result, etag_hit, etag_received
       
     end
+    
     
     private
     
