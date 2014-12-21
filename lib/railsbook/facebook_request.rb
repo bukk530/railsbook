@@ -1,5 +1,6 @@
 require 'digest'
 require 'json'
+require 'openssl'
 require 'net/http'
 require 'uri'
 
@@ -33,12 +34,19 @@ module RailsBook
       
       raise FacebookSDKNotImplemented "POST method not implemented" if @method == "POST"
       
-      url = url + "?" + URL.encode_www_params(params)
+      url = url + "?" + URI.encode_www_form(params)
       params = []
       
       url = URI.parse(url)
       
-      http = Net::HTTP.new(url, 443)
+      cert_path = File.dirname(__FILE__) << "/fb_ca_chain_bundle.crt"
+      
+      http = Net::HTTP.new(url.host, url.port)
+      http.use_ssl = true
+      #http.cert = OpenSSL::X509::Certificate.new( cert_path )
+      #http.key = OpenSSL::PKey::RSA.new( cert_path )
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE #TODO: WTF??? check peer!
+      
       request = Net::HTTP::Get.new(url.request_uri)
       request.add_field "User-Agent", "railsbook-" + VERSION
       request.add_field "Accept-Encoding", "*"
@@ -50,11 +58,20 @@ module RailsBook
       
       etag_received = response.header[:etag]
       
-      decoded_result = json.parse(response.body)
+      decoded_result = { } 
       
-      #TODO: check for errorss
+      #strange things happends here, the response is not json, errors are!
+      begin
+        result = URI::decode_www_form response.body
+        result.each { |r| decoded_result[ r[0] ] = r[1] }
+      rescue
+        error = JSON.parse response.body
+        raise FacebookRequestException.new "Error: " << error["error"]["message"] if error["error"].present?
+      end
+       
+      raise FacebookRequestException.new "Error: no response from Facebook OAuth server" if decoded_result.nil?
       
-      FacebookResponse.new this, decoded_result, result, etag_hit, etag_received
+      FacebookResponse.new self, decoded_result, etag_hit, etag_received
       
     end
     

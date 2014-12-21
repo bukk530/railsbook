@@ -1,5 +1,5 @@
 module RailsBook
-  class FacebookSDKException < Exception
+  class FacebookSDKException < StandardError
     
   end
 end

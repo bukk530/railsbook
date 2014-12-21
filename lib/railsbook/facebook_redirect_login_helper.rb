@@ -1,4 +1,5 @@
 require 'securerandom'
+require 'uri'
 
 #TODO: Implement this class as a Rails Helper class
 
@@ -17,8 +18,6 @@ module RailsBook
       @state = random_bytes(16)
       @session[:_fb_state] = @state
       
-      uri = Addressable::URI.new
-      
       uri_params = {
         client_id:      ENV["app_id"],
         redirect_uri:   @redirect_url,
@@ -29,12 +28,10 @@ module RailsBook
       
       uri_params[:display] = :popup if display_as_popup
       
-      uri.query_values = uri_params
-      
       return "https://www.facebook.com/" +
               RailsBook::GRAPH_API_VERSION +
               "/dialog/oauth?" +
-              uri.query
+              URI.encode_www_form(uri_params)
     end
     
     def get_logout_url(session, next_page)
@@ -48,7 +45,7 @@ module RailsBook
       }
       
       return "https://www.facebook.com/logout.php?" +
-             URL.encode_www_form(uri_params)
+             URI.encode_www_form(uri_params)
     end
     
     def get_session_from_redirect
@@ -56,7 +53,7 @@ module RailsBook
       if is_valid_redirect
         response_params = {
           client_id: ENV["app_id"],
-          redirect_uri: @redirect_uri,
+          redirect_uri: @redirect_url,
           client_secret: ENV["app_secret"],
           code: get_code
         }
@@ -64,9 +61,10 @@ module RailsBook
                                                  "GET",
                                                  "/oauth/access_token",
                                                  response_params
-                                                ).execute.get_response
-        if facebook_response[:access_token].present?
-          FacebookSession.new facebook_response[:access_token]
+                                                ).execute.response
+        
+        if facebook_response["access_token"].present? 
+          return FacebookSession.new( facebook_response["access_token"], facebook_response["expires"] || 0 )
         end
       end
       nil
@@ -75,9 +73,8 @@ module RailsBook
     private 
     
     def is_valid_redirect
-      get_code and 
-      get_state and
-      get_state.eql? @state
+      !get_code.nil? and 
+      get_state.eql? @params[:state]
     end
     
     def get_state
@@ -85,7 +82,7 @@ module RailsBook
     end
     
     def get_code
-      @session[:_fb_code]
+      @params[:code]
     end
     
     def random_bytes(bytes)

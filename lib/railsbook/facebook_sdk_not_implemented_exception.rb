@@ -1,5 +1,5 @@
 module RailsBook
-	class FacebookSDKNotImplementedException < Exception
+	class FacebookSDKNotImplementedException < StandardError
 	  
 	end
 end
