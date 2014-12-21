@@ -1,4 +1,3 @@
-require '/home/bukk530/Documents/Workspace/railsbook/lib/railsbook'
 
 class FbController < ApplicationController
   
