@@ -43,7 +43,13 @@ If you use Git, do:
 git add config/initializers/facebook.rb
 git add config/facebook_app.yml
 ```
- 
+
+Last add
+```ruby
+require 'railsbook'
+```
+to your application
+
 Now you should be able to play with the SDK! 
 
 Usage
