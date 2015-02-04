@@ -44,12 +44,6 @@ git add config/initializers/facebook.rb
 git add config/facebook_app.yml
 ```
 
-Last add
-```ruby
-require 'railsbook'
-```
-to your application
-
 Now you should be able to play with the SDK! 
 
 Usage
@@ -68,6 +62,7 @@ end
 fb_login_controller.rb
 ```ruby
 class FbLoginController < ApplicationController
+	include RailsBook
 	
 	# Initialize our helper (in a future version this will be a real rails helper)
 	before_action do
