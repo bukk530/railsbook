@@ -35,8 +35,15 @@ Open config/facebook_app.yml, it should look like this:
 app_id: "YOUR APP ID"
 app_secret: "YOUR SECRET"
 ```
+
 Now go to your [Facebook application](https://developers.facebook.com/apps/) and replace the App Id and Secret in your config file
 
+If you use Git, do:
+```bash
+git add config/initializers/facebook.rb
+git add config/facebook_app.yml
+```
+ 
 Now you should be able to play with the SDK! 
 
 Usage
