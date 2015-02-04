@@ -39,3 +39,48 @@ Now go to your [Facebook application](https://developers.facebook.com/apps/) and
 
 Now you should be able to play with the SDK! 
 
+Usage
+-----
+
+Ok let's start with a simple login page:
+
+routes.rb
+```ruby
+Rails.application.routes.draw do
+  root				   "fb_login_controller#show_login"
+  get "/login",    to: "fb_login_controller#login",        as: :login
+end
+```
+
+fb_login_controller.rb
+```ruby
+class FbLoginController < ApplicationController
+	
+	# Initialize our helper (in a future version this will be a real rails helper)
+	before_action do
+		@facebook_login_helper = FacebookRedirectLoginHelper.new login_url, session, params
+	end
+	
+	# In this page we will ask the user to log in via Facebook
+	def show_login
+		@facebook_login_url = @facebook_login_helper.get_login_url
+	end
+	
+	# This page is called back from Facebook after the user logged in
+	def login
+	  facebook_session = @facebook_login_helper.get_session_from_redirect
+	  @user = FacebookRequest.new(facebook_session, 'GET', '/me').execute.response
+	end
+end
+```
+
+show_login.html.erb
+```ruby
+<a href="<%= @facebook_login_url %>">Login via Facebook!</a>
+```
+
+login.html.erb
+```ruby
+<h1>Halo <%= @user['name'] %></h1>
+```
+

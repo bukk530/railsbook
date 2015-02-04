@@ -13,7 +13,10 @@ module RailsBook
       @params = params
     end
     
-    def get_login_url(display_as_popup=false, scope = [])
+    # Params:
+    #   -scope
+    #   -display_as_popup
+    def get_login_url(options={})
       
       @state = random_bytes(16)
       @session[:_fb_state] = @state
@@ -22,11 +25,12 @@ module RailsBook
         client_id:      ENV["app_id"],
         redirect_uri:   @redirect_url,
         state:          @state,
-        sdk:            RailsBook::SDK_NAME,
-        scope:          scope.join(",")
+        sdk:            RailsBook::SDK_NAME
       }
       
-      uri_params[:display] = :popup if display_as_popup
+      uri_params[:scope] = options[:scope].join(',') unless options[:scope].nil?
+      
+      uri_params[:display] = :popup if options[:display_as_popup]
       
       return "https://www.facebook.com/" +
               RailsBook::GRAPH_API_VERSION +

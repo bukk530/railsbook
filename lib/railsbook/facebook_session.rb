@@ -26,6 +26,5 @@ module RailsBook
       self.new ENV["app_id"] + "|" + ENV["app_secret"]
     end
     
-    
   end
 end
