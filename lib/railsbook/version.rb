@@ -1,3 +1,3 @@
 module RailsBook
-  VERSION = "0.0.1.6.9"
+  VERSION = "0.0.1.8.2"
 end
