@@ -28,7 +28,7 @@ module RailsBook
       params = @params
       
       if @method == 'GET'
-        url = url + ( url.include? '?' ? '&' : '?' ) + URI.encode_www_form(params)
+        url += ( url.include?('?') ? '&' : '?' ) + URI.encode_www_form(params)
         params = {}
       end
       
