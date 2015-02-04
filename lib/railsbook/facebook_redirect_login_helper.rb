@@ -28,7 +28,13 @@ module RailsBook
         sdk:            RailsBook::SDK_NAME
       }
       
-      uri_params[:scope] = options[:scope].join(',') unless options[:scope].nil?
+      unless options[:scope].nil?
+        if options[:scope].is_a? String
+          uri_params[:scope] = options[:scope]
+        elsif options[:scope].is_a? Array
+          uri_params[:scope] = options[:scope].join(',')
+        end
+      end
       
       uri_params[:display] = :popup if options[:display_as_popup]
       
