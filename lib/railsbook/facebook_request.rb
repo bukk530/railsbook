@@ -32,6 +32,7 @@ module RailsBook
         params = {}
       end
       
+      url = URI.encode(url)
       url = URI.parse(url)
       
       cert_path = File.dirname(__FILE__) + "/fb_ca_chain_bundle.crt"
