@@ -10,7 +10,7 @@ module RailsBook
     def initialize(session, method, path, parameters=nil, etag=nil)
       @session      = session
       @method       = method
-      @path         = path
+      @path         = URI.encode(path)
       @etag         = etag
       @params       = parameters || { }
       @@certificate = nil
@@ -29,15 +29,13 @@ module RailsBook
       
       if @method == 'GET'
         url += ( url.include?('?') ? '&' : '?' ) + URI.encode_www_form(params)
-        params = {}
       end
       
-      url = URI.encode(url)
       url = URI.parse(url)
       
       cert_path = File.dirname(__FILE__) + "/fb_ca_chain_bundle.crt"
       
-      # To avoiding read the file from the disk each time
+      # To avoid reading the file from the disk each time
       # we save it into memory
       if @@certificate.nil?
         @@certificate = File.read( cert_path )
@@ -56,7 +54,7 @@ module RailsBook
         request      = Net::HTTP::Delete.new(url.request_uri)
       end
       
-      request.body = URI::encode_www_form @params unless @params.empty?
+      request.body = URI::encode_www_form @params unless @params.empty? or @method == 'GET'
       request.add_field "User-Agent", "railsbook-" + VERSION
       request.add_field "Accept-Encoding", "*"
       request.add_field "If-None-Match", @etag if !@etag.nil?
