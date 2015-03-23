@@ -13,7 +13,6 @@ module RailsBook
       @path         = URI.encode(path)
       @etag         = etag
       @params       = parameters || { }
-      @@certificate = nil
       
       if @session.is_a? String
          @params[:access_token] = @session
