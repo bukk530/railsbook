@@ -37,13 +37,13 @@ module RailsBook
       
       # To avoid reading the file from the disk each time
       # we save it into memory
-      if @@certificate.nil?
-        @@certificate = File.read( cert_path )
+      certificate = Rails.cache.fetch('railsbook/certificate') do
+        File.read(cert_path)
       end
       
       http = Net::HTTP.new(url.host, url.port)
       http.use_ssl = true
-      http.cert = OpenSSL::X509::Certificate.new @@certificate 
+      http.cert = OpenSSL::X509::Certificate.new certificate 
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       
       if @method == 'GET'
